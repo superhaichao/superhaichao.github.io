@@ -3,9 +3,9 @@ title: 聊聊 ReactiveCocoa 响应式编程
 author: superchao
 date: 2022-07-27
 categories: [Blogging, RAC]
-tags: [typography]
-math: true
-mermaid: true
+tags: [RAC]
+math: false
+mermaid: false
 image:
   path: /commons/devices-mockup.png
 ---
