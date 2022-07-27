@@ -1,7 +1,7 @@
 ---
 title: 聊聊 ReactiveCocoa 响应式编程
 author: superchao
-date: 2022-07-27 11:33:00 +0800
+date: 2022-07-27
 categories: [Blogging, RAC]
 tags: [typography]
 math: true
