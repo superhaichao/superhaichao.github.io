@@ -1,11 +1,9 @@
 ---
 title: 聊聊 ReactiveCocoa 响应式编程
 author: superchao
-date: 2022-07-27
+date: 2022-07-27 14:10:00 +0800
 categories: [Blogging, RAC]
 tags: [RAC]
-math: true
-mermaid: true
 ---
 
 ## ReactiveCocoa
