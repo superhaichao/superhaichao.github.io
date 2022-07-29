@@ -13,3 +13,30 @@ tags: [RAC]
 由于这个原因，您可能听说过 ReactiveCocoa 被描述为函数响应式编程(或FRP)框架。  
 
 ### 与传统编程对比
+
+传统给按钮添加事件方式如下：
+```c
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    
+    [self.button addTarget:self action:@selector(buttonClick) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)buttonClick {
+    
+}
+
+```
+使用RAC 给按钮添加方式如下：
+```c
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.button.rac_command = [[RACCommand alloc] initWithSignalBlock:^(id _) {
+        NSLog(@"button was pressed!");
+        return [RACSignal empty];
+    }];
+}
+```
+相比传统方式使用RAC 更加便捷。
