@@ -28,7 +28,7 @@ tags: [RAC]
 }
 
 ```
-使用RAC 给按钮添加方式如下：
+使用RAC 给按钮添加事件方式如下：
 ```c
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -39,4 +39,9 @@ tags: [RAC]
     }];
 }
 ```
-相比传统方式使用RAC 更加便捷。
+相比传统方式使用RAC 更加便捷，同理为了监控TextField 文本长度也不需要实现代理方法：
+```c
+[self.usernameTextField.rac_textSignal subscribeNext:^(id x) {
+  NSLog(@"%@", x);
+}];
+```
