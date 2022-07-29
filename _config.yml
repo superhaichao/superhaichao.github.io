@@ -84,7 +84,7 @@ img_cdn: 'https://superhaichao.github.io/assets/'
 
 
 # the avatar on sidebar, support local or CORS resources
-avatar: 'avatar.jpeg'
+avatar: 'avatar'
 
 # boolean type, the global switch for ToC in posts.
 toc: true
