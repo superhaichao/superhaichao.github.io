@@ -12,7 +12,7 @@ tags: [Reactiveß]
 
 由于这个原因，您可能听说过 ReactiveCocoa 被描述为函数响应式编程(或FRP)框架。  
 
-### 与传统编程对比
+## 与传统编程对比
 
 传统给按钮添加事件方式如下：
 ```c
@@ -45,3 +45,9 @@ tags: [Reactiveß]
   NSLog(@"%@", x);
 }];
 ```
+## 切入正题 ReactiveObjC
+RAC是一个将函数响应式编程范式带入iOS 的开源库，其兼具函数式与响应式的特性。它是由Josh Abernathy和Justin Spahr-Summers当初在
+开发GitHub for Mac 过程中创造的，灵感来源于Functional Reactive Programming 。ReactiveCocoa-简称为RAC，现在可分为OC版本-ReactiveObjC和
+swift版本-ReactiveSwift。
+![img.png](img.png)
+
