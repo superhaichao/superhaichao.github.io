@@ -68,3 +68,55 @@ swift版本-ReactiveSwift。
 订阅者是正在等待或能够等待信号事件的任何东西。在RAC中，订阅者表示为符合RACSubscriber协议的任何对象。
 订阅是通过调用-subscribeNext:error:completed:或相应的方便方法创建的。从技术上讲，大多数RACStream和RACSignal操作符也创建订阅，
 但这些中间订阅通常是实现细节。订阅保留它们的信号，并在信号完成或出错时自动清楚，订阅也可以手动清除。
+
+### RACCommand
+
+由RACCommand 类表示的命令创建并订阅响应某个操作的信号。这使得用户在与应用程序交互时很容易执行side-effecting 工作。通常触发命令的动作是由ui驱动的，
+就像点击按钮一样。命令也可以根据信号自动禁用，这种禁用状态可以在UI中通过禁用与该命令相关的任何控件来表示。
+```c
+- (void)raccommand{
+    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
+        NSLog(@"执行命令");
+        // 2.创建信号,用来传递数据
+        return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+            [subscriber sendNext:@"请求数据"];
+            // 注意：数据传递完，最好调用sendCompleted，这时命令才执行完毕。
+            [subscriber sendCompleted];
+            return nil;
+        }];
+    }];
+ 
+    // 订阅RACCommand中的信号
+    [command.executionSignals subscribeNext:^(id x) {
+        NSLog(@"command.executionSignals %@",x);
+        [x subscribeNext:^(NSString *x) {
+            NSLog(@"x subscribeNext %@",x);
+        }];
+    }];
+
+    // 监听命令是否执行完毕,默认会来一次，可以直接跳过，skip表示跳过第一次信号。
+    [[command.executing skip:1] subscribeNext:^(id x) {
+        if ([x boolValue] == YES) {
+            NSLog(@"正在执行");
+        }else{
+            NSLog(@"执行完成");
+        }
+    }];
+    [command execute:@1];
+}
+```
+### Connections
+
+由RACMulticastConnection类表示的连接是在任意数量的订阅者之间共享的订阅。信号在默认情况下是冷的，
+这意味着每次添加新订阅时它们就开始工作。这种行为通常是可取的，因为它意味着将为每个订阅者重新计算数据，
+但如果信号有副作用或工作成本很高(例如，发送网络请求)，则可能会出现问题。
+
+连接是通过RACSignal上的-publish或-multicast:方法创建的，并确保只创建一个底层订阅，
+不管订阅了多少次连接。连接之后，连接的信号被称为热的，基础订阅将保持活动状态，直到对该连接的所有订阅被销毁。
+
+### Sequences
+
+由RACSequence类表示的序列是一个 pull-driven（拉驱动流），序列是一种集合，
+在目的上类似于NSArray。与数组不同的是，序列中的值在默认情况下是惰性计算的(也就是说，只在需要它们的时候)，
+如果只使用序列的一部分，那么可能会提高性能。就像Cocoa集合一样，序列不能包含nil。RAC为大多数Cocoa的集合类添加了一个-rac_sequence方法，
+允许它们被用作racsequence。
