@@ -4,6 +4,7 @@ author: superchao
 date: 2022-07-27 00:08:00 +0800
 categories: [Blogging, Reactive]
 tags: [Reactiveß]
+img_path: /assets/
 ---
 
 作为一名iOS开发者，你所编写的每一行代码都是针对某些事件的反应，点击按钮、接收到的网络消息、属性改变(通过Key Value Observing)或通过 CoreLocation 改变用户位置都是很好的例子。 然而，这些事件都以不同的方式编码， 作为动作，委托，KVO，回调和其他。 ReactiveCocoa 为事件定义了一个标准接口，因此可以使用一组基本的工具更容易地链接、过滤和组合事件，相比之前的方式更加简单，ReactiveCocoa结合了两种编程风格:  
@@ -49,5 +50,5 @@ tags: [Reactiveß]
 RAC是一个将函数响应式编程范式带入iOS 的开源库，其兼具函数式与响应式的特性。它是由Josh Abernathy和Justin Spahr-Summers当初在
 开发GitHub for Mac 过程中创造的，灵感来源于Functional Reactive Programming 。ReactiveCocoa-简称为RAC，现在可分为OC版本-ReactiveObjC和
 swift版本-ReactiveSwift。
-![img.png](assets/racoverview.png)
+![img.png](racoverview.png)
 
