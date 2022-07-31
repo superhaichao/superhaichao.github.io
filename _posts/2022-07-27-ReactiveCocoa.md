@@ -163,3 +163,61 @@ RACSignal *letters = [@"A B C D E F G H I" componentsSeparatedByString:@" "].rac
     }];
 }
 ```
+
+## 冷热 Singal
+
+### cold signal
+
+大多数信号开始时都是“冷的”，这意味着它们在订阅之前不会做任何工作。在订阅时，信号或其订阅者可以执行side work，如登录到控制台、发出网络请求、更新用户界面等。还可以将side work 注入到信号中，它们不会立即执行，但会在以后的每次订阅中生效。
+
+```c
+_block unsigned subscriptions = 0;
+
+RACSignal *loggingSignal = [RACSignal createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
+    subscriptions++;
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+// Outputs:
+// subscription 1
+[loggingSignal subscribeCompleted:^{
+    NSLog(@"subscription %u", subscriptions);
+}];
+
+// Outputs:
+// subscription 2
+[loggingSignal subscribeCompleted:^{
+    NSLog(@"subscription %u", subscriptions);
+}];
+```
+
+### hot signal
+
+connection 是通过RACSignal 上的-publish 或-multicast: 方法创建的，并确保只创建一个底层订阅，不管订阅了多少次connection。连接之后，连接的信号被称为hot signal，基础订阅将保持活动状态，直到对该连接的所有订阅被销毁。
+
+hot signal 可以有多个订阅者，是一对多，集合可以与订阅者共享信息；而cold signal 只能一对一，当有不同的订阅者，消息是重新完整发送。
+
+```c
+- (void)multicastConnection{
+    // 假设在一个信号中计数，每次订阅一次都会触发计数，这样就会导致多次计数。
+    // RACMulticastConnection: 解决重复处理的问题
+    __block int count = 0;
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        ++ count;
+        NSNumber* number = [NSNumber numberWithInt:count];
+        [subscriber sendNext:number];
+        return nil;
+    }];
+ 
+    RACMulticastConnection *connect = [signal publish];
+    [connect.signal subscribeNext:^(id x) {
+        NSLog(@"订阅者一信号 %@",x);
+    }];
+    [connect.signal subscribeNext:^(id x) {
+        NSLog(@"订阅者二信号 %@",x);
+    }];
+    // 连接,激活信号
+    [connect connect];
+}
+```
