@@ -63,12 +63,31 @@ swift版本-ReactiveSwift。
 
 信号的生命周期包括任意数量的下一个事件，然后是一个错误或完成事件(但不是两个都有)。
 
+```c
+- (void)createSignal{
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@8];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+    [signal subscribeNext:^(id x) {
+        NSLog(@"订阅者 %@",x);
+    }];
+}
+```
 ### Subscription
 
 订阅者是正在等待或能够等待信号事件的任何东西。在RAC中，订阅者表示为符合RACSubscriber协议的任何对象。
 订阅是通过调用-subscribeNext:error:completed:或相应的方便方法创建的。从技术上讲，大多数RACStream和RACSignal操作符也创建订阅，
 但这些中间订阅通常是实现细节。订阅保留它们的信号，并在信号完成或出错时自动清楚，订阅也可以手动清除。
+```c
+RACSignal *letters = [@"A B C D E F G H I" componentsSeparatedByString:@" "].rac_sequence.signal;
 
+// Outputs: A B C D E F G H I
+[letters subscribeNext:^(NSString *x) {
+    NSLog(@"%@", x);
+}];
+```
 ### RACCommand
 
 由RACCommand 类表示的命令创建并订阅响应某个操作的信号。这使得用户在与应用程序交互时很容易执行side-effecting 工作。通常触发命令的动作是由ui驱动的，
@@ -114,9 +133,33 @@ swift版本-ReactiveSwift。
 连接是通过RACSignal上的-publish或-multicast:方法创建的，并确保只创建一个底层订阅，
 不管订阅了多少次连接。连接之后，连接的信号被称为热的，基础订阅将保持活动状态，直到对该连接的所有订阅被销毁。
 
+```c
+- (void)multicastConnection{
+    __block int count = 0;
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        ++ count;
+        NSNumber* number = [NSNumber numberWithInt:count];
+        [subscriber sendNext:number];
+        return nil;
+    }];
+    RACMulticastConnection *connect = [signal publish];
+    [connect.signal subscribeNext:^(id x) {
+        NSLog(@"订阅者 %@",x);
+    }];
+    [connect connect];
+}
+```
 ### Sequences
 
-由RACSequence类表示的序列是一个 pull-driven（拉驱动流），序列是一种集合，
-在目的上类似于NSArray。与数组不同的是，序列中的值在默认情况下是惰性计算的(也就是说，只在需要它们的时候)，
-如果只使用序列的一部分，那么可能会提高性能。就像Cocoa集合一样，序列不能包含nil。RAC为大多数Cocoa的集合类添加了一个-rac_sequence方法，
-允许它们被用作racsequence。
+由RACSequence 类表示的序列是一个 pull-driven（拉驱动流），序列是一种集合，
+在目的上类似于NSArray。与数组不同的是，序列中的值在默认情况下是惰性计算的(也就是说，只在需要它们的时候)，如果只使用序列的一部分，那么可能会提高性能。就像Cocoa 集合一样，序列不能包含 nil。RAC 为大多数Cocoa 的集合类添加了一个-rac_sequence 方法，允许它们被用作 racsequence。
+
+```c
+- (void)sequence {
+    RACSequence *sequence = @[@1, @2, @3].rac_sequence;
+    RACSignal *signal = sequence.signal;
+    [signal subscribeNext:^(id  _Nullable x) {
+        NSLog(@"%@", x);
+    }];
+}
+```
